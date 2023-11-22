@@ -25,6 +25,9 @@ const io = new Server(server, {
 
 io.on('connection', (socket)=> {
     console.log('Connection is establise');
+    socket.on('new_message', (message)=> {
+        socket.broadcast.emit('broadcast_message',message);
+    })
     socket.on('disconnect', ()=> {
         console.log('Connection is disconnect');
     })
