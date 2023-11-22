@@ -1,53 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat App</title>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="chat-container">
-        <div id="message-list">
+      <div id="message-list"></div>
 
-        </div>
-
-        <input type="text" id="message-input" placeholder="write here..."/>
-        <button id="send-message">Send</button>
-
+      <input type="text" id="message-input" placeholder="write here..." />
+      <button id="send-message">Send</button>
     </div>
-    
 
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
     <script>
-        // Socket code in js
-       const socket = io.connect('http://localhost:3000');
+      // Socket code in js
+      const socket = io.connect("http://localhost:3000");
 
-       // get element
-       const messageInput = document.getElementById('message-input');
-       const messageList = document.getElementById('message-list');
-       const sendButton = document.getElementById('send-message');
+      const username = prompt("Enter your name");
+      // emit the username to server
+      socket.emit("join", username);
 
-       sendButton.addEventListener('click', ()=> {
+      // get element
+      const messageInput = document.getElementById("message-input");
+      const messageList = document.getElementById("message-list");
+      const sendButton = document.getElementById("send-message");
+
+      sendButton.addEventListener("click", () => {
         // read message from input and send to server
         const message = messageInput.value;
-        if(message) {
-            socket.emit('new_message', message);
+        if (message) {
+          socket.emit("new_message", message);
         }
         // add message to list
-        const messageElement = document.createElement('div');
-        messageElement.innerText = message;
+        const messageElement = document.createElement("div");
+        messageElement.innerText = username + ":" + message;
         messageList.appendChild(messageElement);
-        messageInput.value = '';
-       })
+        messageInput.value = "";
+      });
 
-       // litsen broadcasting message and add to list
-       socket.on('broadcast_message', (message)=> {
-        const messageElement = document.createElement('div');
-        messageElement.innerText = message;
+      // litsen broadcasting message and add to list
+      socket.on("broadcast_message", (useMessage) => {
+        const messageElement = document.createElement("div");
+        messageElement.innerText =
+          useMessage.username + ": " + useMessage.message;
         messageList.appendChild(messageElement);
-       })
-
+      });
     </script>
-</body>
+  </body>
 </html>
