@@ -27,6 +27,15 @@ io.on("connection", (socket) => {
 
   socket.on("join", (username) => {
     socket.username = username;
+
+    // sending old messages to client
+    Chat.find().sort({timestamp:1}).limit(50)
+    .then((message)=> {
+      socket.emit('old_messages', message);
+    })
+    .catch((err)=> {
+      console.log(err);
+    })
   })
 
     socket.on("new_message", (message) => {

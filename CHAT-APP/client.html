@@ -40,6 +40,18 @@
         messageInput.value = "";
       });
 
+
+      // add messages on UI
+
+      socket.on('old_messages', (messages)=> {
+        messages.forEach((message)=> {
+          const divElement = document.createElement('div');
+          divElement.innerText = `${new Date(message.timestamp).toDateString()}-${message.username}:${message.message}`;
+          messageList.appendChild(divElement);
+        })
+      })
+
+
       // litsen broadcasting message and add to list
       socket.on("broadcast_message", (useMessage) => {
         const messageElement = document.createElement("div");
