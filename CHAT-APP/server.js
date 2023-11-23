@@ -2,6 +2,8 @@ import express from "express";
 import { Server } from "socket.io";
 import cors from "cors";
 import http from "http";
+import {connectDB} from './config.js';
+import {Chat} from './chat.schema.js';
 
 const app = express();
 
@@ -28,11 +30,23 @@ io.on("connection", (socket) => {
   })
 
     socket.on("new_message", (message) => {
-      // broadcasting this message to all the clients
+      
       let userMessage = {
         username: socket.username,
         message: message,
       };
+
+      // Storing chat in database
+
+      const newChat = new Chat({
+        username:socket.username,
+        message:message,
+        timestamp:new Date()
+      });
+      newChat.save()
+
+      // broadcasting this message to all the clients
+
       socket.broadcast.emit("broadcast_message", userMessage);
     });
   
@@ -43,4 +57,5 @@ io.on("connection", (socket) => {
 
 server.listen(3000, () => {
   console.log("App is listening on port 3000");
+  connectDB();
 });
